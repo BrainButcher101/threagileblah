@@ -319,8 +319,8 @@ technical_assets:
         #diagram_tweak_weight: 1
         #diagram_tweak_constraint: false
       User Management Access:
-        target: ldap-auth-server
-        description: Link to the LDAP auth server for managing users
+        target: identity-provider
+        description: Link to the id for managing users
         protocol: ldaps # values: see help
         authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
         authorization: technical-user # values: none, technical-user, enduser-identity-propagation
