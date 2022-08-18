@@ -24,22 +24,20 @@ author:
 
 
 management_summary_comment: >
-  Just some <b>more</b> custom summary possible here...
+  The Dashboard is the frontend for ... 
+  The Dashboard cumulates the functionality for Orchestrator, Marketplace and Policy Framework
 
 business_criticality: mission-critical # values: archive, operational, important, critical, mission-critical
 
 
-
-
 business_overview:
-  description: Some more <i>demo text</i> here and even images...
+  description: Currently in a very early stage
   images:
 #    - custom-image-1.png: Some dummy image 1
 #    - custom-image-2.png: Some dummy image 2
 
-
 technical_overview:
-  description: Some more <i>demo text</i> here and even images...
+  description: The frontend is mainly build on react and some additional frameworks
   images:
 #    - custom-image-1.png: Some dummy image 1
 #    - custom-image-2.png: Some dummy image 2
@@ -59,9 +57,7 @@ questions: # simply use "" as answer to signal "unanswered"
 abuse_cases:
   Denial-of-Service: >
     As a hacker I want to disturb the functionality of the backend system in order to cause indirect
-    financial damage via unusable features.
-  CPU-Cycle Theft: >
-    As a hacker I want to steal CPU cycles in order to transform them into money via installed crypto currency miners.
+    financial damage via unusable features. And attack the availablity of the service as such.
   Ransomware: >
     As a hacker I want to encrypt the storage and file systems in order to demand ransom.
   Identity Theft: >
@@ -69,95 +65,92 @@ abuse_cases:
   PII Theft: >
     As a hacker I want to steal PII (Personally Identifiable Information) data in order to blackmail the company and/or damage
     their repudiation by publishing them.
-  ERP-System Compromise: >
-    As a hacker I want to access the ERP-System in order to steal/modify sensitive business data.
   Database Compromise: >
-    As a hacker I want to access the database backend of the ERP-System in order to steal/modify sensitive
+    As a hacker I want to access the database backend of the Frontend in order to steal/modify sensitive
     business data.
-  Contract Filesystem Compromise: >
-    As a hacker I want to access the filesystem storing the contract PDFs in order to steal/modify contract data.
   Cross-Site Scripting Attacks: >
     As a hacker I want to execute Cross-Site Scripting (XSS) and similar attacks in order to takeover victim sessions and
-    cause reputational damage.
+    cause reputational damage and eventually damage on the customer side.
   Denial-of-Service of Enduser Functionality: >
     As a hacker I want to disturb the functionality of the enduser parts of the application in order to cause direct financial
     damage (lower sales).
-  Denial-of-Service of ERP/DB Functionality: >
-    As a hacker I want to disturb the functionality of the ERP system and/or it's database in order to cause indirect
-    financial damage via unusable internal ERP features (not related to customer portal).
-  Blah: >
-    I want to blah
 
 
 security_requirements:
   Input Validation: Strict input validation is required to reduce the overall attack surface.
   Securing Administrative Access: Administrative access must be secured with strong encryption and multi-factor authentication.
   EU-DSGVO: Mandatory EU-Datenschutzgrundverordnung
+  Encryption: We need to apply strict encryption of customer sensitive data
 
 
 # Tags can be used for anything, it's just a tag. Also risk rules can act based on tags if you like.
 # Tags can be used for example to name the products used (which is more concrete than the technology types that only specify the type)
 tags_available:
   - linux
-  - apache
   - mysql
-  - jboss
-  - keycloak
-  - jenkins
   - git
-  - oracle
-  - some-erp
-  - vmware
   - aws
   - aws:ec2
   - aws:s3
-
-
-
+  - aws:cognito
+  - terraform
 
 data_assets:
 
+  Customer Organization: &customer-org
+    id: customer-org
+    description: Data asset being created as an Umbrella for individual accounts and assets in use
+    usage: devops
+    tags:
+    origin: Customer
+    owner: Customer Company
+    quantity: many
+    confidentiality: confidential
+    integrity: important
+    availability: mission-critical
+    justification_cia_rating: >
+      The Org Data asset consolidates users, workflows, configuration and keys
 
-  Customer Contracts: &customer-contracts # this example shows the inheritance-like features of YAML
-    id: customer-contracts
-    description: Customer Contracts (PDF)
+
+  Customer Infrastructure data: &customer-infra # this example shows the inheritance-like features of YAML
+    <<: *customer-org
+    id: customer-infra
+    description: Customer Infrastructure Data
     usage: business # values: business, devops
     tags:
     origin: Customer
-    owner: Company XYZ
+    owner: Customer Company
     quantity: many # values: very-few, few, many, very-many
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
+    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
     integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: operational # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Contract data might contain financial data as well as personally identifiable information (PII). The integrity and
-      availability of contract data is required for clearing payment disputes.
-
-
-  Customer Contract Summaries:
-    <<: *customer-contracts # here we're referencing the above created asset as base and just overwrite few values
-    id: contract-summaries
-    description: Customer Contract Summaries
-    quantity: very-few # values: very-few, few, many, very-many
-    confidentiality: restricted # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: operational # values: archive, operational, important, critical, mission-critical
-    availability: operational # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Just some summaries.
-
-
-  Customer Operational Data:
-    <<: *customer-contracts # here we're referencing the above created asset as base and just overwrite few values
-    id: customer-operational-data
-    description: Customer Operational Data
     availability: critical # values: archive, operational, important, critical, mission-critical
     justification_cia_rating: >
-      Customer operational data for using the portal are required to be available to offer the portal functionality
-      and are used in the backend transactions.
+      Customer Infrastructure data will contain very sensitive and competitive data
+
+
+  Customer State Files:
+    <<: *customer-infra # here we're referencing the above created asset as base and just overwrite few values
+    id: customer-state
+    description: Customer State Files
+    quantity: many # values: very-few, few, many, very-many
+    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
+    integrity: mission-critical # values: archive, operational, important, critical
+    availability: mission-critical # values: archive, operational, important, critical, mission-critical
+    justification_cia_rating: >
+      The state files need to ensure integrity at all cost as this influences a core functionality of our platform
+
+
+  Customer Access Keys:
+    <<: *customer-infra # here we're referencing the above created asset as base and just overwrite few values
+    id: customer-access-keys
+    description: Customer Access keys for various cloud accounts
+    availability: mission-critical # values: archive, operational, important, critical, mission-critical
+    justification_cia_rating: >
+      No keys no cookies, if lost we are fucked
 
 
   Customer Accounts:
-    <<: *customer-contracts # here we're referencing the above created asset as base and just overwrite few values
+    <<: *customer-org # here we're referencing the above created asset as base and just overwrite few values
     id: customer-accounts
     description: Customer Accounts (including transient credentials when entered for checking them)
     confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
@@ -165,30 +158,13 @@ data_assets:
     justification_cia_rating: >
       Customer account data for using the portal are required to be available to offer the portal functionality.
 
-
-  Some Internal Business Data:
-    id: internal-business-data
-    description: Internal business data of the ERP system used unrelated to the customer-facing processes.
-    usage: business # values: business, devops
-    tags:
-    origin: Company XYZ
-    owner: Company XYZ
-    quantity: few # values: very-few, few, many, very-many
-    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: critical # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Data used and/or generated during unrelated other usecases of the ERP-system (when used also by Company XYZ for
-      internal non-customer-portal-related stuff).
-
-
-  Client Application Code: &client-application-code # this example shows the inheritance-like features of YAML
+  Company Application Code: &client-application-code # this example shows the inheritance-like features of YAML
     id: client-application-code
-    description: Angular and other client-side code delivered by the application.
+    description: React and other client-side code delivered by the application.
     usage: devops # values: business, devops
     tags:
-    origin: Company ABC
-    owner: Company ABC
+    origin: StackGuardian
+    owner: StackGuardian
     quantity: very-few # values: very-few, few, many, very-many
     confidentiality: public # values: public, internal, restricted, confidential, strictly-confidential
     integrity: critical # values: archive, operational, important, critical, mission-critical
@@ -202,86 +178,37 @@ data_assets:
     <<: *client-application-code # here we're referencing the above created asset as base and just overwrite few values
     id: server-application-code
     description: API and other server-side code of the application.
-    confidentiality: internal # values: public, internal, restricted, confidential, strictly-confidential
+    confidentiality: restricted # values: public, internal, restricted, confidential, strictly-confidential
     integrity: mission-critical # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The integrity of the API code is critical to avoid reputational damage and the availability is important on the
-      long-term scale (but not critical) to keep the growth rate of the customer base steady.
-
-
-  Build Job Config:
-    id: build-job-config
-    description: Data for customizing of the build job system.
-    usage: devops # values: business, devops
-    tags:
-    origin: Company XYZ
-    owner: Company XYZ
-    quantity: very-few # values: very-few, few, many, very-many
-    confidentiality: restricted # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: operational # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Data for customizing of the build job system.
-
-
-  Marketing Material:
-    <<: *client-application-code # here we're referencing the above created asset as base and just overwrite few values
-    id: marketing-material
-    description: Website and marketing data to inform potential customers and generate new leads.
-    integrity: important # values: archive, operational, important, critical, mission-critical
-
-
-  ERP Logs:
-    id: erp-logs
-    description: Logs generated by the ERP system.
-    usage: devops # values: business, devops
-    tags:
-    origin: Company XYZ
-    owner: Company XYZ
-    quantity: many # values: very-few, few, many, very-many
-    confidentiality: restricted # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: archive # values: archive, operational, important, critical, mission-critical
-    availability: archive # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Logs should not contain PII data and are only required for failure analysis, i.e. they are not considered as hard
-      transactional logs.
-
-
-  ERP Customizing Data:
-    id: erp-customizing
-    description: Data for customizing of the ERP system.
-    usage: devops # values: business, devops
-    tags:
-    origin: Company XYZ
-    owner: Company XYZ
-    quantity: very-few # values: very-few, few, many, very-many
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
     availability: critical # values: archive, operational, important, critical, mission-critical
     justification_cia_rating: >
-      Data for customizing of the ERP system.
+      The integrity of the server side code is critical to avoid reputational damage and the availability is important on the
+      long-term scale (but not critical) to keep the growth rate of the customer base steady.
+
+  Marketing Material:
+    id: marketing-material
+    description: Website and marketing data to inform potential customers and generate new leads.
+    quantity: many
+    usage: business
+    integrity: important # values: archive, operational, important, critical, mission-critical
+    availability: operational
+    confidentiality: public
+    justification_cia_rating: >
+      public available data
 
 
   Database Customizing and Dumps:
     id: db-dumps
     description: Data for customizing of the DB system, which might include full database dumps.
     usage: devops # values: business, devops
-    tags:
-      - oracle
-    origin: Company XYZ
-    owner: Company XYZ
+    origin: StackGuardian
+    owner: StackGuardian
     quantity: very-few # values: very-few, few, many, very-many
     confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
     integrity: critical # values: archive, operational, important, critical, mission-critical
     availability: critical # values: archive, operational, important, critical, mission-critical
     justification_cia_rating: >
       Data for customizing of the DB system, which might include full database dumps.
-
-
-
-
-
 
 technical_assets:
 
@@ -311,9 +238,6 @@ technical_assets:
     custom_developed_parts: false
     data_assets_processed: # sequence of IDs to reference
       - customer-accounts
-      - customer-operational-data
-      - customer-contracts
-      - client-application-code
       - marketing-material
     data_assets_stored: # sequence of IDs to reference
     data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
@@ -321,95 +245,27 @@ technical_assets:
       Customer Traffic:
         target: load-balancer
         description: Link to the load balancer
-        protocol: http # values: see help
+        protocol: https # values: see help
         authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
         authorization: enduser-identity-propagation # values: none, technical-user, enduser-identity-propagation
         tags:
+          - aws
         vpn: false
         ip_filtered: false
         readonly: false
         usage: business # values: business, devops
         data_assets_sent: # sequence of IDs to reference
           - customer-accounts
-          - customer-operational-data
+          - customer-access-keys
         data_assets_received: # sequence of IDs to reference
           - customer-accounts
-          - customer-operational-data
-          - customer-contracts
+          - customer-org
+          - customer-infra
+          - customer-acccess-keys
           - client-application-code
           - marketing-material
         #diagram_tweak_weight: 1
         #diagram_tweak_constraint: false
-
-
-  Backoffice Client:
-    id: backoffice-client
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: Backoffice client
-    type: external-entity # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: true
-    out_of_scope: true
-    justification_out_of_scope: Owned and managed by Company XYZ company
-    size: component # values: system, service, application, component
-    technology: desktop # values: see help
-    tags:
-    internet: false
-    machine: physical # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company XYZ
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: important # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The client used by Company XYZ to administer and use the system.
-    multi_tenant: false
-    redundant: false
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-      - customer-contracts
-      - internal-business-data
-      - erp-logs
-    data_assets_stored: # sequence of IDs to reference
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-    communication_links:
-      ERP Internal Access:
-        target: erp-system
-        description: Link to the ERP system
-        protocol: https # values: see help
-        authentication: token # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: enduser-identity-propagation # values: none, technical-user, enduser-identity-propagation
-        tags:
-          - some-erp
-        vpn: true
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - internal-business-data
-        data_assets_received: # sequence of IDs to reference
-          - customer-contracts
-          - internal-business-data
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-      Marketing CMS Editing:
-        target: marketing-cms
-        description: Link to the CMS for editing content
-        protocol: https # values: see help
-        authentication: token # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: enduser-identity-propagation # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: true
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - marketing-material
-        data_assets_received: # sequence of IDs to reference
-          - marketing-material
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-
 
   Backend Admin Client:
     id: backend-admin-client
@@ -418,35 +274,40 @@ technical_assets:
     type: external-entity # values: external-entity, process, datastore
     usage: devops # values: business, devops
     used_as_client_by_human: true
-    out_of_scope: true
-    justification_out_of_scope: Owned and managed by ops provider
+    out_of_scope: false
+    justification_out_of_scope:
     size: component # values: system, service, application, component
     technology: browser # values: see help
     tags:
     internet: false
     machine: physical # values: physical, virtual, container, serverless
     encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company XYZ
-    confidentiality: internal # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: operational # values: archive, operational, important, critical, mission-critical
-    availability: operational # values: archive, operational, important, critical, mission-critical
+    owner: StackGuardian
+    confidentiality: restricted # values: public, internal, restricted, confidential, strictly-confidential
+    integrity: important # values: archive, operational, important, critical, mission-critical
+    availability: important # values: archive, operational, important, critical, mission-critical
     justification_cia_rating: >
-      The client used by Company XYZ to administer the system.
+      The client used by us to administer the system.
     multi_tenant: false
     redundant: false
     custom_developed_parts: false
     data_assets_processed: # sequence of IDs to reference
-      - erp-logs
+      - server-application-code
     data_assets_stored: # sequence of IDs to reference
+      - server-application-code
     data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
+      - file
+      - json
+      - xml
     communication_links:
-      ERP Web Access:
-        target: erp-system
-        description: Link to the ERP system (Web)
+      git-repo:
+        target: git-repo
+        description: Link to the Git repo (web)
         protocol: https # values: see help
-        authentication: token # values: none, credentials, session-id, token, client-certificate, two-factor
+        authentication: two-factor # values: none, credentials, session-id, token, client-certificate, two-factor
         authorization: technical-user # values: none, technical-user, enduser-identity-propagation
         tags:
+          - git
         vpn: false
         ip_filtered: false
         readonly: false
@@ -454,27 +315,7 @@ technical_assets:
         data_assets_sent: # sequence of IDs to reference
           - erp-customizing
         data_assets_received: # sequence of IDs to reference
-          - erp-logs
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-      DB Update Access:
-        target: sql-database
-        description: Link to the database (JDBC tunneled via SSH)
-        protocol: ssh # values: see help
-        authentication: client-certificate # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: devops # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - db-dumps
-        data_assets_received: # sequence of IDs to reference
-          - db-dumps
-          - erp-logs
-          - customer-accounts
-          - customer-operational-data
+          - server-application-code
         #diagram_tweak_weight: 1
         #diagram_tweak_constraint: false
       User Management Access:
@@ -499,7 +340,7 @@ technical_assets:
   Load Balancer:
     id: load-balancer
     #diagram_tweak_order: 50 # affects left to right positioning (only within a trust boundary)
-    description: Load Balancer (HA-Proxy)
+    description: Load Balancer (AWS-ALB)
     type: process # values: external-entity, process, datastore
     usage: business # values: business, devops
     used_as_client_by_human: false
@@ -523,11 +364,6 @@ technical_assets:
     custom_developed_parts: false
     data_assets_processed: # sequence of IDs to reference
       - customer-accounts
-      - customer-operational-data
-      - customer-contracts
-      - internal-business-data
-      - client-application-code
-      - marketing-material
     data_assets_stored: # sequence of IDs to reference
     data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
     communication_links:
@@ -552,23 +388,6 @@ technical_assets:
           - client-application-code
         #diagram_tweak_weight: 5
         #diagram_tweak_constraint: false
-      CMS Content Traffic:
-        target: marketing-cms
-        description: Link to the CMS server
-        protocol: http # values: see help
-        authentication: none # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: none # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: true
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-        data_assets_received: # sequence of IDs to reference
-          - marketing-material
-        #diagram_tweak_weight: 5
-        #diagram_tweak_constraint: false
-
 
   Apache Webserver:
     id: apache-webserver
@@ -599,9 +418,6 @@ technical_assets:
     custom_developed_parts: true
     data_assets_processed: # sequence of IDs to reference
       - customer-accounts
-      - customer-operational-data
-      - customer-contracts
-      - internal-business-data
       - client-application-code
       - server-application-code
     data_assets_stored: # sequence of IDs to reference
@@ -611,28 +427,6 @@ technical_assets:
       - json
       - file
     communication_links:
-      ERP System Traffic:
-        target: erp-system
-        description: Link to the ERP system
-        protocol: https # values: see help
-        authentication: token # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - customer-accounts
-          - customer-operational-data
-          - internal-business-data
-        data_assets_received: # sequence of IDs to reference
-          - customer-accounts
-          - customer-operational-data
-          - customer-contracts
-          - internal-business-data
-        #diagram_tweak_weight: 5
-        #diagram_tweak_constraint: false
       Auth Credential Check Traffic:
         target: identity-provider
         description: Link to the identity provider server
@@ -661,13 +455,11 @@ technical_assets:
     size: component # values: system, service, application, component
     technology: identity-provider # values: see help
     tags:
-      - linux
-      - jboss
-      - keycloak
+      - git
     internet: false
     machine: virtual # values: physical, virtual, container, serverless
     encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
+    owner: Amazon Web Services
     confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
     integrity: critical # values: archive, operational, important, critical, mission-critical
     availability: critical # values: archive, operational, important, critical, mission-critical
@@ -680,259 +472,7 @@ technical_assets:
       - customer-accounts
     data_assets_stored: # sequence of IDs to reference
     data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-    communication_links:
-      LDAP Credential Check Traffic:
-        target: ldap-auth-server
-        description: Link to the LDAP server
-        protocol: ldaps # values: see help
-        authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - customer-accounts
-        data_assets_received: # sequence of IDs to reference
-
-
-  LDAP Auth Server:
-    id: ldap-auth-server
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: LDAP authentication server
-    type: datastore # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: component # values: system, service, application, component
-    technology: identity-store-ldap # values: see help
-    tags:
-      - linux
-    internet: false
-    machine: physical # values: physical, virtual, container, serverless
-    encryption: transparent # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: critical # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The auth data of the application
-    multi_tenant: false
-    redundant: false
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-      - customer-accounts
-    data_assets_stored: # sequence of IDs to reference
-      - customer-accounts
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-    communication_links:
-
-
-  Marketing CMS:
-    id: marketing-cms
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: CMS for the marketing content
-    type: process # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: application # values: system, service, application, component
-    technology: cms # values: see help
-    tags:
-      - linux
-    internet: false
-    machine: container # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: internal # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: important # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The correct configuration and reachability of the web server is mandatory for all customer usages of the portal.
-    multi_tenant: false
-    redundant: false
-    custom_developed_parts: true
-    data_assets_processed: # sequence of IDs to reference
-      - marketing-material
-      - customer-accounts
-    data_assets_stored: # sequence of IDs to reference
-      - marketing-material
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-    communication_links:
-      Auth Traffic:
-        target: ldap-auth-server
-        description: Link to the LDAP auth server
-        protocol: ldap # values: see help
-        authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: true
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - customer-accounts
-        data_assets_received: # sequence of IDs to reference
-          - customer-accounts
-        #diagram_tweak_weight: 5
-        #diagram_tweak_constraint: false
-
-
-  Backoffice ERP System:
-    id: erp-system
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: ERP system
-    type: process # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: system # values: system, service, application, component
-    technology: erp # values: see help
-    tags:
-      - linux
-    internet: false
-    machine: virtual # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: mission-critical # values: archive, operational, important, critical, mission-critical
-    availability: mission-critical # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The ERP system contains business-relevant sensitive data for the leasing processes and eventually also for other
-      Company XYZ internal processes.
-    multi_tenant: false
-    redundant: true
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-      - customer-accounts
-      - customer-operational-data
-      - customer-contracts
-      - internal-business-data
-      - erp-customizing
-    data_assets_stored: # sequence of IDs to reference
-      - erp-logs
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-      - xml
       - file
-      - serialization
-    communication_links:
-      Database Traffic:
-        target: sql-database
-        description: Link to the DB system
-        protocol: jdbc # values: see help
-        authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - customer-accounts
-          - customer-operational-data
-          - internal-business-data
-        data_assets_received: # sequence of IDs to reference
-          - customer-accounts
-          - customer-operational-data
-          - internal-business-data
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-      NFS Filesystem Access:
-        target: contract-fileserver
-        description: Link to the file system
-        protocol: nfs # values: see help
-        authentication: none # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: none # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: business # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - customer-contracts
-        data_assets_received: # sequence of IDs to reference
-          - customer-contracts
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-
-
-  Contract Fileserver:
-    id: contract-fileserver
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: NFS Filesystem for storing the contract PDFs
-    type: datastore # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: component # values: system, service, application, component
-    technology: file-server # values: see help
-    tags:
-      - linux
-      - aws:s3
-    internet: false
-    machine: virtual # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      Contract data might contain financial data as well as personally identifiable information (PII). The integrity and
-      availability of contract data is required for clearing payment disputes. The filesystem is also required to be available
-      for storing new contracts of freshly generated customers.
-    multi_tenant: false
-    redundant: false
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-    data_assets_stored: # sequence of IDs to reference
-      - customer-contracts
-      - contract-summaries
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-      - file
-    communication_links:
-
-
-  Customer Contract Database:
-    id: sql-database
-    #diagram_tweak_order: 0 # affects left to right positioning (only within a trust boundary)
-    description: The database behind the ERP system
-    type: datastore # values: external-entity, process, datastore
-    usage: business # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: component # values: system, service, application, component
-    technology: database # values: see help
-    tags:
-      - linux
-      - mysql
-    internet: false
-    machine: virtual # values: physical, virtual, container, serverless
-    encryption: data-with-symmetric-shared-key # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: mission-critical # values: archive, operational, important, critical, mission-critical
-    availability: mission-critical # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The ERP system's database contains business-relevant sensitive data for the leasing processes and eventually also
-      for other Company XYZ internal processes.
-    multi_tenant: false
-    redundant: false
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-      - db-dumps
-    data_assets_stored: # sequence of IDs to reference
-      - customer-accounts
-      - customer-operational-data
-      - internal-business-data
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-    communication_links:
-
 
   External Development Client:
     id: external-dev-client
@@ -946,10 +486,9 @@ technical_assets:
     size: system # values: system, service, application, component
     technology: devops-client # values: see help
     tags:
-      - linux
     internet: true
     machine: physical # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
+    encryption: transparent # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
     owner: External Developers
     confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
     integrity: critical # values: archive, operational, important, critical, mission-critical
@@ -972,7 +511,7 @@ technical_assets:
         target: git-repo
         description: Link to the Git repo
         protocol: ssh # values: see help
-        authentication: client-certificate # values: none, credentials, session-id, token, client-certificate, two-factor
+        authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
         authorization: technical-user # values: none, technical-user, enduser-identity-propagation
         tags:
         vpn: false
@@ -991,25 +530,6 @@ technical_assets:
         target: git-repo
         description: Link to the Git repo
         protocol: https # values: see help
-        authentication: token # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: devops # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - client-application-code
-          - server-application-code
-        data_assets_received: # sequence of IDs to reference
-          - client-application-code
-          - server-application-code
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-      Jenkins Web-UI Access:
-        target: jenkins-buildserver
-        description: Link to the Jenkins build server
-        protocol: https # values: see help
         authentication: credentials # values: none, credentials, session-id, token, client-certificate, two-factor
         authorization: technical-user # values: none, technical-user, enduser-identity-propagation
         tags:
@@ -1018,12 +538,13 @@ technical_assets:
         readonly: false
         usage: devops # values: business, devops
         data_assets_sent: # sequence of IDs to reference
-          - build-job-config
+          - client-application-code
+          - server-application-code
         data_assets_received: # sequence of IDs to reference
-          - build-job-config
+          - client-application-code
+          - server-application-code
         #diagram_tweak_weight: 1
         #diagram_tweak_constraint: false
-
 
   Git Repository:
     id: git-repo
@@ -1037,18 +558,17 @@ technical_assets:
     size: system # values: system, service, application, component
     technology: sourcecode-repository # values: see help
     tags:
-      - linux
       - git
-    internet: false
+    internet: true
     machine: virtual # values: physical, virtual, container, serverless
     encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
     owner: Company ABC
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: important # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
+    confidentiality: strictly-confidential # values: public, internal, restricted, confidential, strictly-confidential
+    integrity: critical # values: archive, operational, important, critical, mission-critical
+    availability: critical # values: archive, operational, important, critical, mission-critical
     justification_cia_rating: >
       The code repo pipeline might contain sensitive configuration values like backend credentials, certificates etc. and is
-      therefore rated as confidential.
+      therefore rated as strictly-confidential.
     multi_tenant: true
     redundant: false
     custom_developed_parts: false
@@ -1061,103 +581,21 @@ technical_assets:
     data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
       - file
     communication_links:
-
-
-  Jenkins Buildserver:
-    id: jenkins-buildserver
-    #diagram_tweak_order: 99 # affects left to right positioning (only within a trust boundary)
-    description: Jenkins buildserver
-    type: process # values: external-entity, process, datastore
-    usage: devops # values: business, devops
-    used_as_client_by_human: false
-    out_of_scope: false
-    justification_out_of_scope:
-    size: system # values: system, service, application, component
-    technology: build-pipeline # values: see help
-    tags:
-      - linux
-      - jenkins
-    internet: false
-    machine: virtual # values: physical, virtual, container, serverless
-    encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
-    owner: Company ABC
-    confidentiality: confidential # values: public, internal, restricted, confidential, strictly-confidential
-    integrity: critical # values: archive, operational, important, critical, mission-critical
-    availability: important # values: archive, operational, important, critical, mission-critical
-    justification_cia_rating: >
-      The build pipeline might contain sensitive configuration values like backend credentials, certificates etc. and is
-      therefore rated as confidential. The integrity and availability is rated as critical and important due to the risk
-      of reputation damage and application update unavailability when the build pipeline is compromised.
-    multi_tenant: true
-    redundant: false
-    custom_developed_parts: false
-    data_assets_processed: # sequence of IDs to reference
-      - build-job-config
-      - client-application-code
-      - server-application-code
-      - marketing-material
-    data_assets_stored: # sequence of IDs to reference
-      - build-job-config
-      - client-application-code
-      - server-application-code
-      - marketing-material
-    data_formats_accepted: # sequence of formats like: json, xml, serialization, file, csv
-      - file
-      - serialization
-    communication_links:
-      Git Repo Code Read Access:
-        target: git-repo
-        description: Link to the Git repository server
-        protocol: ssh # values: see help
-        authentication: client-certificate # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: true
-        usage: devops # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-        data_assets_received: # sequence of IDs to reference
-          - client-application-code
-          - server-application-code
-        #diagram_tweak_weight: 1
-        #diagram_tweak_constraint: false
-      Application Deployment:
-        target: apache-webserver
-        description: Link to the Apache webserver
-        protocol: ssh # values: see help
-        authentication: client-certificate # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: devops # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - client-application-code
-          - server-application-code
-        data_assets_received: # sequence of IDs to reference
-      CMS Updates:
-        target: marketing-cms
-        description: Link to the CMS
-        protocol: ssh # values: see help
-        authentication: client-certificate # values: none, credentials, session-id, token, client-certificate, two-factor
-        authorization: technical-user # values: none, technical-user, enduser-identity-propagation
-        tags:
-        vpn: false
-        ip_filtered: false
-        readonly: false
-        usage: devops # values: business, devops
-        data_assets_sent: # sequence of IDs to reference
-          - marketing-material
-        data_assets_received: # sequence of IDs to reference
-
 
 
 
 
 trust_boundaries:
 
+  AWS VPC:
+    id: aws-vpc
+    description: AMazon VPC
+    type: network-cloud-provider
+    tags:
+    technical_assets_inside:
+    trust_boundaries_nested:
+      - web-dmz
+      - application-network
 
   Web DMZ:
     id: web-dmz
@@ -1165,23 +603,10 @@ trust_boundaries:
     type: network-cloud-security-group # values: see help
     tags:
     technical_assets_inside: # sequence of IDs to reference
+      - load-balancer
       - apache-webserver
       - marketing-cms
     trust_boundaries_nested: # sequence of IDs to reference
-
-
-  ERP DMZ:
-    id: erp-dmz
-    description: ERP DMZ
-    type: network-cloud-security-group # values: see help
-    tags:
-      - some-erp
-    technical_assets_inside: # sequence of IDs to reference
-      - erp-system
-      - contract-fileserver
-      - sql-database
-    trust_boundaries_nested: # sequence of IDs to reference
-
 
   Application Network:
     id: application-network
@@ -1193,7 +618,6 @@ trust_boundaries:
       - load-balancer
     trust_boundaries_nested: # sequence of IDs to reference
       - web-dmz
-      - erp-dmz
       - auth-env
 
 
@@ -1204,43 +628,26 @@ trust_boundaries:
     tags:
     technical_assets_inside: # sequence of IDs to reference
       - identity-provider
-      - ldap-auth-server
     trust_boundaries_nested: # sequence of IDs to reference
 
 
   Dev Network:
     id: dev-network
     description: Development Network
-    type: network-on-prem # values: see help
+    type: network-cloud-provider # values: see help
     tags:
+      - aws
     technical_assets_inside: # sequence of IDs to reference
-      - jenkins-buildserver
       - git-repo
-      - backend-admin-client
-      - backoffice-client
     trust_boundaries_nested: # sequence of IDs to reference
 
 
-
-
-
 shared_runtimes:
-
-
-  WebApp and Backoffice Virtualization:
-    id: webapp-virtualization
-    description: WebApp Virtualization
+  Puh:
+    id: puh
+    description: blah
     tags:
-      - vmware
     technical_assets_running: # sequence of IDs to reference
-      - apache-webserver
-      - marketing-cms
-      - erp-system
-      - contract-fileserver
-      - sql-database
-
-
-
 
 individual_risk_categories: # used for adding custom manually identified risks
 
@@ -1268,9 +675,9 @@ individual_risk_categories: # used for adding custom manually identified risks
         exploitation_impact: medium # values: low, medium, high, very-high
         data_breach_probability: probable # values: improbable, possible, probable
         data_breach_technical_assets: # list of technical asset IDs which might have data breach
-          - sql-database
+          - git-repo
         most_relevant_data_asset:
-        most_relevant_technical_asset: sql-database
+        most_relevant_technical_asset: git-repo
         most_relevant_communication_link:
         most_relevant_trust_boundary:
         most_relevant_shared_runtime:
@@ -1298,26 +705,12 @@ individual_risk_categories: # used for adding custom manually identified risks
 # seeding the risk tracking part here based on already identified and not yet handled risks.
 risk_tracking:
 
-  untrusted-deserialization@erp-system: # wildcards "*" between the @ characters are possible
-    status: accepted # values: unchecked, in-discussion, accepted, in-progress, mitigated, false-positive
-    justification: Risk accepted as tolerable
-    ticket: XYZ-1234
-    date: 2020-01-04
-    checked_by: John Doe
-
-  ldap-injection@*@ldap-auth-server@*: # wildcards "*" between the @ characters are possible
-    status: mitigated # values: unchecked, in-discussion, accepted, in-progress, mitigated, false-positive
-    justification: The hardening measures were implemented and checked
-    ticket: XYZ-5678
-    date: 2020-01-05
-    checked_by: John Doe
-
   unencrypted-asset@*: # wildcards "*" between the @ characters are possible
-    status: mitigated # values: unchecked, in-discussion, accepted, in-progress, mitigated, false-positive
-    justification: The hardening measures were implemented and checked
+    status: unchecked # values: unchecked, in-discussion, accepted, in-progress, mitigated, false-positive
+    justification: The hardening measures need evaluation
     ticket: XYZ-1234
     date: 2020-01-04
-    checked_by: John Doe
+    checked_by: Tom Schmidt
 
   missing-authentication-second-factor@*@*@*: # wildcards "*" between the @ characters are possible
     status: mitigated # values: unchecked, in-discussion, accepted, in-progress, mitigated, false-positive
