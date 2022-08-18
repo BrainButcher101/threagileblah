@@ -599,7 +599,6 @@ trust_boundaries:
     technical_assets_inside: # sequence of IDs to reference
       - load-balancer
       - apache-webserver
-      - marketing-cms
     trust_boundaries_nested: # sequence of IDs to reference
 
   Application Network:
