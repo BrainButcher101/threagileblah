@@ -261,7 +261,7 @@ technical_assets:
           - customer-accounts
           - customer-org
           - customer-infra
-          - customer-acccess-keys
+          - customer-access-keys
           - client-application-code
           - marketing-material
         #diagram_tweak_weight: 1
