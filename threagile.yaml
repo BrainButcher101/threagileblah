@@ -313,7 +313,7 @@ technical_assets:
         readonly: false
         usage: devops # values: business, devops
         data_assets_sent: # sequence of IDs to reference
-          - erp-customizing
+
         data_assets_received: # sequence of IDs to reference
           - server-application-code
         #diagram_tweak_weight: 1
