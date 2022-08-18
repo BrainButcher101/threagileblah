@@ -597,7 +597,6 @@ trust_boundaries:
     type: network-cloud-security-group # values: see help
     tags:
     technical_assets_inside: # sequence of IDs to reference
-      - load-balancer
       - apache-webserver
     trust_boundaries_nested: # sequence of IDs to reference
 
