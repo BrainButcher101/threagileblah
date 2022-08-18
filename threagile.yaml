@@ -380,11 +380,8 @@ technical_assets:
         usage: business # values: business, devops
         data_assets_sent: # sequence of IDs to reference
           - customer-accounts
-          - customer-operational-data
         data_assets_received: # sequence of IDs to reference
           - customer-accounts
-          - customer-operational-data
-          - customer-contracts
           - client-application-code
         #diagram_tweak_weight: 5
         #diagram_tweak_constraint: false
@@ -401,9 +398,6 @@ technical_assets:
     size: application # values: system, service, application, component
     technology: web-server # values: see help
     tags:
-      - linux
-      - apache
-      - aws:ec2
     internet: false
     machine: container # values: physical, virtual, container, serverless
     encryption: none # values: none, transparent, data-with-symmetric-shared-key, data-with-asymmetric-shared-key, data-with-enduser-individual-key
@@ -589,7 +583,7 @@ trust_boundaries:
 
   AWS VPC:
     id: aws-vpc
-    description: AMazon VPC
+    description: Amazon VPC
     type: network-cloud-provider
     tags:
     technical_assets_inside:
